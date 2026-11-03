@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.remoto.mobile'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.remoto.mobile'
+        minSdk 23            // Android 6.0 (necessario para o Keystore guardar as senhas)
+        targetSdk 34
+        versionCode 122
+        versionName '1.22'
+    }
+
+    // Assinatura opcional: defina KEYSTORE_FILE, KEYSTORE_PASSWORD, KEY_ALIAS e KEY_PASSWORD.
+    // Sem elas o APK sai assinado com a chave de debug (instala, mas cada build tem assinatura diferente).
+    def hasKeystore = System.getenv('KEYSTORE_FILE') != null
+    signingConfigs {
+        release {
+            if (hasKeystore) {
+                storeFile file(System.getenv('KEYSTORE_FILE'))
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig hasKeystore ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
